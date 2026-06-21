@@ -4,7 +4,7 @@ import { supabase } from './lib/supabase';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [sales, setSales] = useState([]);
   const [purchases, setPurchases] = useState([]);
   const [products, setProducts] = useState([]);
