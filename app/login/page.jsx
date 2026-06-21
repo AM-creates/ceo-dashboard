@@ -20,7 +20,7 @@ export default function Login() {
   const handleSignUp = async () => {
     setLoading(true);
     setError('');
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
     if (error) setError(error.message);
     else setError('Έλεγξε το email σου για επιβεβαίωση!');
     setLoading(false);
