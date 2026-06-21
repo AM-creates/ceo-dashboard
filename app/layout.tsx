@@ -22,6 +22,7 @@ const navItems = [
   { label: "Προϊόντα", href: "/products", icon: "📦" },
   { label: "Αποθήκη", href: "/inventory", icon: "🏭" },
   { label: "Πελάτες", href: "/customers", icon: "👥" },
+  { label: "Τιμοκατάλογος", href: "/pricing", icon: "💲" },
   { label: "Προμηθευτές", href: "/suppliers", icon: "🏢" },
   { label: "Reports", href: "/reports", icon: "📈" },
   { label: "Ημερολόγιο", href: "/calendar", icon: "📅" },
