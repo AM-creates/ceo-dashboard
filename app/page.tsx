@@ -18,7 +18,7 @@ export default function Dashboard() {
     });
   }, []);
 
-  const loadAll = async (userId) => {
+  const loadAll = async (userId: any) => {
     const [s, p, pr, c] = await Promise.all([
       supabase.from('sales').select('*').eq('user_id', userId),
       supabase.from('purchases').select('*').eq('user_id', userId),
