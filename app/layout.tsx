@@ -23,6 +23,7 @@ const navItems = [
   { label: "Πελάτες", href: "/customers", icon: "👥" },
   { label: "Προμηθευτές", href: "/suppliers", icon: "🏢" },
   { label: "Reports", href: "/reports", icon: "📈" },
+  { label: "Ημερολόγιο", href: "/calendar", icon: "📅" },
   { label: "Ρυθμίσεις", href: "/settings", icon: "⚙️" },
 ];
 
@@ -82,4 +83,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+} 
