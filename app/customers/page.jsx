@@ -8,7 +8,7 @@ const emptyCustomer = {
 
 export default function Customers() {
   const [customers, setCustomers] = useState([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyCustomer);
   const [editing, setEditing] = useState(null);
