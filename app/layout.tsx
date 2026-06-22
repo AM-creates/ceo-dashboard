@@ -18,7 +18,7 @@ const navGroups = [
   {
     label: "Πωλήσεις",
     items: [
-      { label: "Πωλήσεις", href: "/sales", icon: "💰" },
+      { label: "Παραγγελίες", href: "/orders", icon: "🧾" },
       { label: "Πελάτες", href: "/customers", icon: "👥" },
       { label: "Τιμοκατάλογος", href: "/pricing", icon: "💲" },
     ]
