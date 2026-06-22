@@ -1,32 +1,54 @@
 'use client';
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const navItems = [
-  { label: "Dashboard", href: "/", icon: "📊" },
-  { label: "Πωλήσεις", href: "/sales", icon: "💰" },
-  { label: "Αγορές", href: "/purchases", icon: "🛒" },
-  { label: "Προϊόντα", href: "/products", icon: "📦" },
-  { label: "Αποθήκη", href: "/inventory", icon: "🏭" },
-  { label: "Πελάτες", href: "/customers", icon: "👥" },
-  { label: "Τιμοκατάλογος", href: "/pricing", icon: "💲" },
-  { label: "Προμηθευτές", href: "/suppliers", icon: "🏢" },
-  { label: "Reports", href: "/reports", icon: "📈" },
-  { label: "Ημερολόγιο", href: "/calendar", icon: "📅" },
-  { label: "Ρυθμίσεις", href: "/settings", icon: "⚙️" },
+const navGroups = [
+  {
+    label: "Γενικά",
+    items: [
+      { label: "Dashboard", href: "/", icon: "📊" },
+      { label: "Ημερολόγιο", href: "/calendar", icon: "📅" },
+    ]
+  },
+  {
+    label: "Πωλήσεις",
+    items: [
+      { label: "Πωλήσεις", href: "/sales", icon: "💰" },
+      { label: "Πελάτες", href: "/customers", icon: "👥" },
+      { label: "Τιμοκατάλογος", href: "/pricing", icon: "💲" },
+    ]
+  },
+  {
+    label: "Αγορές",
+    items: [
+      { label: "Αγορές", href: "/purchases", icon: "🛒" },
+      { label: "Προμηθευτές", href: "/suppliers", icon: "🏢" },
+    ]
+  },
+  {
+    label: "Αποθήκη",
+    items: [
+      { label: "Προϊόντα", href: "/products", icon: "📦" },
+      { label: "Αποθήκη", href: "/inventory", icon: "🏭" },
+    ]
+  },
+  {
+    label: "Αναλύσεις",
+    items: [
+      { label: "Reports", href: "/reports", icon: "📈" },
+    ]
+  },
+  {
+    label: "Ρυθμίσεις",
+    items: [
+      { label: "Ρυθμίσεις", href: "/settings", icon: "⚙️" },
+    ]
+  },
 ];
 
 function Sidebar() {
@@ -46,17 +68,22 @@ function Sidebar() {
       <div className="p-5 border-b border-gray-800">
         <h1 className="text-white font-semibold text-lg">CEO Dashboard</h1>
       </div>
-      <nav className="flex-1 p-3">
-        {navItems.map(item => (
-          <a key={item.href} href={item.href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-1 text-sm transition-colors ${
-              current === item.href
-                ? "bg-purple-600 text-white font-medium"
-                : "text-gray-400 hover:text-white hover:bg-gray-800"
-            }`}>
-            <span>{item.icon}</span>
-            <span>{item.label}</span>
-          </a>
+      <nav className="flex-1 p-3 overflow-y-auto">
+        {navGroups.map(group => (
+          <div key={group.label} className="mb-4">
+            <p className="text-gray-500 text-xs font-medium uppercase tracking-wider px-3 mb-1">{group.label}</p>
+            {group.items.map(item => (
+              <a key={item.href} href={item.href}
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl mb-0.5 text-sm transition-colors ${
+                  current === item.href
+                    ? "bg-purple-600 text-white font-medium"
+                    : "text-gray-400 hover:text-white hover:bg-gray-800"
+                }`}>
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </a>
+            ))}
+          </div>
         ))}
       </nav>
       <div className="p-3 border-t border-gray-800">
@@ -85,4 +112,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-} 
+}
