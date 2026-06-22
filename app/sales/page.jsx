@@ -40,15 +40,26 @@ export default function Sales() {
     if (p.data) setProducts(p.data);
   };
 
-  const handleProductChange = (productId) => {
+  const handleProductChange = async (productId) => {
     const product = products.find(p => p.id === productId);
     if (product) {
-      const total = product.sale_price * form.quantity;
-      const profit = (product.sale_price - product.cost_price) * form.quantity;
-      setForm({ ...form, product_id: productId, sale_price: product.sale_price, cost_price: product.cost_price, total, profit });
+      let salePrice = product.sale_price;
+      // Έλεγχος για ειδική τιμή πελάτη
+      if (form.customer_id) {
+        const { data } = await supabase
+          .from('customer_pricing')
+          .select('*')
+          .eq('customer_id', form.customer_id)
+          .eq('product_id', productId)
+          .single();
+        if (data) salePrice = data.sale_price;
+      }
+      const total = salePrice * form.quantity;
+      const profit = (salePrice - product.cost_price) * form.quantity;
+      setForm({ ...form, product_id: productId, sale_price: salePrice, cost_price: product.cost_price, total, profit });
     }
   };
-
+  
   const handleQuantityChange = (qty) => {
     const total = form.sale_price * qty;
     const profit = (form.sale_price - form.cost_price) * qty;
