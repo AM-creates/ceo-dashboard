@@ -22,7 +22,7 @@ export default function Reports() {
 
   const loadAll = async (userId) => {
     const [s, p, pr] = await Promise.all([
-      supabase.from('sales').select('*').eq('user_id', userId),
+      supabase.from('orders').select('*').eq('user_id', userId),
       supabase.from('purchases').select('*').eq('user_id', userId),
       supabase.from('Products').select('*').eq('user_id', userId),
     ]);
