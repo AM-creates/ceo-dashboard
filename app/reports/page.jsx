@@ -7,6 +7,7 @@ const COLORS = ['#534AB7', '#1D9E75', '#EF9F27', '#D85A30', '#E24B4A', '#8B5CF6'
 
 export default function Reports() {
   const [sales, setSales] = useState([]);
+  const [orderItems, setOrderItems] = useState([]);
   const [purchases, setPurchases] = useState([]);
   const [products, setProducts] = useState([]);
   const [user, setUser] = useState(null);
@@ -21,18 +22,19 @@ export default function Reports() {
   }, []);
 
   const loadAll = async (userId) => {
-    const [s, p, pr] = await Promise.all([
+    const [s, oi, p, pr] = await Promise.all([
       supabase.from('orders').select('*').eq('user_id', userId),
+      supabase.from('order_items').select('*').eq('user_id', userId),
       supabase.from('purchases').select('*').eq('user_id', userId),
       supabase.from('Products').select('*').eq('user_id', userId),
     ]);
     if (s.data) setSales(s.data);
+    if (oi.data) setOrderItems(oi.data);
     if (p.data) setPurchases(p.data);
     if (pr.data) setProducts(pr.data);
     setLoading(false);
   };
 
-  // Τζίρος & Κέρδος ανά Μήνα
   const monthlyData = () => {
     const months = {};
     sales.forEach(s => {
@@ -51,10 +53,9 @@ export default function Reports() {
     return Object.values(months).sort((a, b) => a.month.localeCompare(b.month));
   };
 
-  // Top 10 Προϊόντα
   const topProducts = () => {
     const prod = {};
-    sales.forEach(s => {
+    orderItems.forEach(s => {
       if (!s.product_id) return;
       if (!prod[s.product_id]) prod[s.product_id] = { id: s.product_id, revenue: 0, qty: 0, profit: 0 };
       prod[s.product_id].revenue += s.total || 0;
@@ -67,10 +68,9 @@ export default function Reports() {
       .map(p => ({ ...p, name: products.find(pr => pr.id === p.id)?.name || '-' }));
   };
 
-  // Πωλήσεις ανά Κατηγορία
   const categoryData = () => {
     const cats = {};
-    sales.forEach(s => {
+    orderItems.forEach(s => {
       const product = products.find(p => p.id === s.product_id);
       const cat = product?.category || 'Άλλο';
       if (!cats[cat]) cats[cat] = { name: cat, value: 0 };
@@ -79,7 +79,6 @@ export default function Reports() {
     return Object.values(cats).sort((a, b) => b.value - a.value);
   };
 
-  // Αποθήκη ανά Κατηγορία
   const warehouseByCategory = () => {
     const cats = {};
     products.forEach(p => {
@@ -107,12 +106,10 @@ export default function Reports() {
     <div className="min-h-screen bg-gray-950 text-white p-6">
       <div className="max-w-6xl mx-auto">
 
-        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-xl font-medium">Reports</h1>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-1 border-b border-gray-800 mb-6">
           {tabs.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
@@ -122,7 +119,6 @@ export default function Reports() {
           ))}
         </div>
 
-        {/* ΕΠΙΣΚΟΠΗΣΗ */}
         {activeTab === 'overview' && (
           <div className="flex flex-col gap-6">
             <div className="bg-gray-900 rounded-xl p-4">
@@ -163,7 +159,7 @@ export default function Reports() {
                     <Pie data={categoryData()} cx="50%" cy="50%" innerRadius={60} outerRadius={100} dataKey="value">
                       {categoryData().map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                     </Pie>
-                    <Tooltip contentStyle={{ background: '#111827', border: 'none', borderRadius: 8 }} formatter={(v) => `€${v.toFixed(2)}`} />
+                    <Tooltip contentStyle={{ background: '#111827', border: 'none', borderRadius: 8 }} formatter={(v) => `€${Number(v).toFixed(2)}`} />
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="flex flex-col gap-2">
@@ -171,7 +167,7 @@ export default function Reports() {
                     <div key={cat.name} className="flex items-center gap-2 text-sm">
                       <div className="w-3 h-3 rounded-sm" style={{ background: COLORS[i % COLORS.length] }}></div>
                       <span className="text-gray-300">{cat.name}</span>
-                      <span className="font-medium ml-2">€{cat.value.toFixed(2)}</span>
+                      <span className="font-medium ml-2">€{Number(cat.value).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
@@ -180,7 +176,6 @@ export default function Reports() {
           </div>
         )}
 
-        {/* ΠΡΟΪΟΝΤΑ */}
         {activeTab === 'products' && (
           <div className="flex flex-col gap-6">
             <div className="bg-gray-900 rounded-xl p-4">
@@ -190,7 +185,7 @@ export default function Reports() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
                   <YAxis type="category" dataKey="name" stroke="#9CA3AF" fontSize={11} width={120} />
-                  <Tooltip contentStyle={{ background: '#111827', border: 'none', borderRadius: 8 }} formatter={(v) => `€${v.toFixed(2)}`} />
+                  <Tooltip contentStyle={{ background: '#111827', border: 'none', borderRadius: 8 }} formatter={(v) => `€${Number(v).toFixed(2)}`} />
                   <Bar dataKey="revenue" fill="#534AB7" radius={4} name="Τζίρος" />
                 </BarChart>
               </ResponsiveContainer>
@@ -203,7 +198,7 @@ export default function Reports() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis type="number" stroke="#9CA3AF" fontSize={12} />
                   <YAxis type="category" dataKey="name" stroke="#9CA3AF" fontSize={11} width={120} />
-                  <Tooltip contentStyle={{ background: '#111827', border: 'none', borderRadius: 8 }} formatter={(v) => `€${v.toFixed(2)}`} />
+                  <Tooltip contentStyle={{ background: '#111827', border: 'none', borderRadius: 8 }} formatter={(v) => `€${Number(v).toFixed(2)}`} />
                   <Bar dataKey="profit" fill="#1D9E75" radius={4} name="Κέρδος" />
                 </BarChart>
               </ResponsiveContainer>
@@ -211,7 +206,6 @@ export default function Reports() {
           </div>
         )}
 
-        {/* ΑΠΟΘΗΚΗ */}
         {activeTab === 'warehouse' && (
           <div className="flex flex-col gap-6">
             <div className="bg-gray-900 rounded-xl p-4">
@@ -221,7 +215,7 @@ export default function Reports() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} />
                   <YAxis stroke="#9CA3AF" fontSize={12} />
-                  <Tooltip contentStyle={{ background: '#111827', border: 'none', borderRadius: 8 }} formatter={(v) => `€${v.toFixed(2)}`} />
+                  <Tooltip contentStyle={{ background: '#111827', border: 'none', borderRadius: 8 }} formatter={(v) => `€${Number(v).toFixed(2)}`} />
                   <Bar dataKey="value" fill="#EF9F27" radius={4} name="Αξία (€)" />
                 </BarChart>
               </ResponsiveContainer>
